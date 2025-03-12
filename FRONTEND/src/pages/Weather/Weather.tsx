@@ -15,7 +15,7 @@ interface CityWeather {
 }
 
 interface WeatherData {
-  weather_data: Record<string, CityWeather>; // Object where keys are city names
+  weather_data: Record<string, CityWeather>;
 }
 
 const Weather: React.FC = () => {
@@ -38,8 +38,8 @@ const Weather: React.FC = () => {
 
   // Fetch weather data from the backend
   const fetchWeather = async () => {
-    if (selectedCities.length < 3) {
-      alert("Please select at least 3 cities.");
+    if (selectedCities.length < 1) {
+      alert("Please select at least 1 city.");
       return;
     }
 
@@ -61,7 +61,7 @@ const Weather: React.FC = () => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
         // No user is logged in, redirect to /login
-        navigate('/login');
+        navigate("/login");
       } else {
         setLoading(false);
       }
@@ -82,24 +82,42 @@ const Weather: React.FC = () => {
       </h1>
 
       {/* City Selection Dropdown */}
-      <select
-        multiple
-        value={selectedCities}
-        onChange={handleCityChange}
-        className="w-full p-2 border rounded-md mb-4"
-      >
-        {citiesList.map((city) => (
-          <option key={city} value={city}>
-            {city}
-          </option>
-        ))}
-      </select>
+      <div className="mb-4">
+        <label className="block text-lg font-medium mb-2">Select Cities</label>
+        <div className="space-y-2 max-h-60 overflow-y-auto p-2 bg-white border border-gray-300 rounded-md shadow-sm">
+          {citiesList.map((city) => (
+            <div key={city} className="flex items-center">
+              <input
+                type="checkbox"
+                value={city}
+                checked={selectedCities.includes(city)}
+                onChange={(e) => {
+                  const newSelectedCities = e.target.checked
+                    ? [...selectedCities, city]
+                    : selectedCities.filter(
+                        (selectedCity) => selectedCity !== city
+                      );
+                  setSelectedCities(newSelectedCities);
+                }}
+                id={city}
+                className="h-4 w-4 text-primary-500 border-gray-300 rounded focus:ring-primary-500"
+              />
+              <label htmlFor={city} className="ml-2 text-sm text-gray-700">
+                {city}
+              </label>
+            </div>
+          ))}
+        </div>
+        <div className="mt-2 text-sm text-gray-400">
+          {selectedCities.length} selected
+        </div>
+      </div>
 
       {/* Get Weather Data Button */}
       <button
         onClick={fetchWeather}
-        disabled={selectedCities.length < 3}
-        className="w-full py-2 bg-primary-500 text-white font-semibold rounded-md disabled:bg-gray-300"
+        disabled={selectedCities.length < 1}
+        className="w-full py-2 bg-primary-500 text-white font-semibold rounded-md disabled:bg-gray-300 enabled:cursor-pointer"
       >
         Get Weather Data
       </button>

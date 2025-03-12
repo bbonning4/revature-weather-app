@@ -20,7 +20,7 @@
     - BASE_URL
 - Create the virtual environment: python3 -m venv venv
 - On Windows: venv\Scripts\activate  Otherwise: venv/bin/activate
-- Ensure all dependencies are installed: pip install Flask requests python-dotenv prometheus_client flask_cors
+- Ensure all dependencies are installed: pip install Flask requests python-dotenv prometheus_client flask_cors flask-socketio eventlet
 - flask run
 
 # Prometheus and Grafana

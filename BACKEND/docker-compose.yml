@@ -4,6 +4,7 @@ services:
     container_name: prometheus
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./alert_rules.yml:/etc/prometheus/alert_rules.yml
     ports:
       - "9090:9090"
 
@@ -16,5 +17,15 @@ services:
       - prometheus
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
-    # volumes:
-    #   - grafana-data:/var/lib/grafana
+    volumes:
+      - ./grafana.ini:/etc/grafana/grafana.ini
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    depends_on:
+      - prometheus

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { io } from "socket.io-client";
 
 // List of cities for selection
 const citiesList = ["New York", "London", "Mumbai", "Tokyo", "Sydney", "Dubai"];
@@ -18,10 +19,13 @@ interface WeatherData {
   weather_data: Record<string, CityWeather>;
 }
 
+const socket = io("http://localhost:5000");
+
 const Weather: React.FC = () => {
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [weatherAlert, setWeatherAlert] = useState<string | null>(null);
   const navigate = useNavigate();
   const auth = getAuth();
 
@@ -57,6 +61,22 @@ const Weather: React.FC = () => {
     }
   };
 
+  // Listen for new alerts from the backend
+  useEffect(() => {
+    socket.on(
+      "new_alert",
+      (alertData: { alerts: [{ annotations: { description: string } }] }) => {
+        setWeatherAlert(
+          alertData.alerts[0]?.annotations?.description || "No description"
+        );
+      }
+    );
+
+    return () => {
+      socket.off("new_alert");
+    };
+  }, []);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
@@ -72,7 +92,7 @@ const Weather: React.FC = () => {
   }, [auth, navigate]);
 
   if (loading) {
-    return <div>Loading...</div>; // You can show a loading state until authentication is confirmed
+    return <div>Loading...</div>;
   }
 
   return (
@@ -135,6 +155,30 @@ const Weather: React.FC = () => {
             </div>
           ))}
       </div>
+
+      {/* Alert Popup */}
+      {weatherAlert && (
+        <div className="fixed top-0 left-0 w-full h-full bg-gray-500 bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-1/2">
+            <h2 className="text-xl font-bold">New Alert</h2>
+            <p>{weatherAlert}</p>
+            <button
+              onClick={() => setWeatherAlert(null)}
+              className="mt-4 bg-primary-500 text-white py-2 px-4 rounded-md"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* {weatherData && (
+        <iframe
+          src="http://localhost:3000/d-solo/eefbkwbdi96o0b/revature2?orgId=1&from=1741810188538&to=1741810488538&timezone=browser&refresh=5s&panelId=1&__feature.dashboardSceneSolo"
+          width="450"
+          height="200"
+        ></iframe>
+      )} */}
     </div>
   );
 };

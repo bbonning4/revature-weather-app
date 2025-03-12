@@ -45,6 +45,8 @@ const Register: React.FC = () => {
     setPasswordVisible(!passwordVisible);
   };
 
+  const PasswordStrength = password1 ? <PasswordStrengthMeter password={password1}/> : <br />;
+
   return (
     <>
       <div className="flex items-start justify-between rounded-t border-b p-5">
@@ -87,7 +89,8 @@ const Register: React.FC = () => {
               className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 pr-10 text-gray-900 shadow-sm focus:border-secondary-600 focus:ring-secondary-600 sm:text-sm"
             />
             <div
-              className="absolute inset-y-0 bottom-3.5 right-3 flex cursor-pointer items-center"
+              // className="absolute inset-y-0 bottom-3.5 right-3 flex cursor-pointer items-center"
+              className={`absolute inset-y-0 ${password1 ? "bottom-3.5" : "top-1"} right-3 flex cursor-pointer items-center`}
               onClick={togglePasswordVisibility}
             >
               {passwordVisible ? (
@@ -96,7 +99,7 @@ const Register: React.FC = () => {
                 <EyeSlashIcon className="h-5 w-5 text-gray-500" />
               )}
             </div>
-            <PasswordStrengthMeter password={password1} />
+            {PasswordStrength}
           </div>
 
           <div className="col-span-2 -mt-4">

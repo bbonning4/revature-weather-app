@@ -1,0 +1,11 @@
+groups:
+  - name: weather-alerts
+    rules:
+      - alert: HighTemperatureAlert
+        expr: weather_temperature > 20
+        for: 10s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Temperature in {{ $labels.city }} is above 20°C"
+          description: "The temperature in {{ $labels.city }} has been above 20°C for more than 5 minutes."

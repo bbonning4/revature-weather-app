@@ -1,11 +1,13 @@
 import os
 from flask import Flask, request, jsonify
+from flask_socketio import SocketIO # type: ignore
 import requests
 from prometheus_client import Gauge, generate_latest, CollectorRegistry, CONTENT_TYPE_LATEST
 from flask_cors import CORS
 from dotenv import load_dotenv
 
 app = Flask(__name__)
+socketio = SocketIO(app, cors_allowed_origins="*")
 CORS(app)
 
 # Create a new registry for Prometheus
@@ -76,5 +78,12 @@ def metrics():
     """Expose Prometheus metrics"""
     return generate_latest(registry), 200, {'Content-Type': CONTENT_TYPE_LATEST}
 
+@app.route("/alerts", methods=["POST"])
+def handle_alert():
+    print(f"Received alert: {request.json}")  # Print the incoming alert
+    alert = request.json  # Get alert data
+    socketio.emit("new_alert", alert)  # Send to frontend
+    return {"status": "received"}, 200
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    socketio.run(app, host='0.0.0.0', port=5000, debug=True)

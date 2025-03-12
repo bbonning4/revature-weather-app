@@ -1,4 +1,4 @@
-## Weather Tracking Application
+# Weather Tracking Application
 - React-Typescript w/ TailwindCSS frontend
 - Python/Flask backend
 - Prometheus and Grafana w/ Docker for metrics analysis
@@ -6,18 +6,18 @@
 # Running Frontend
 - Ensure all dependencies are installed: npm i
 - Create a .env file with the following variables: 
-VITE_API_KEY
-VITE_AUTH_DOMAIN
-VITE_PROJECT_ID
-VITE_STORAGE_BUCKET
-VITE_MESSAGING_SENDER_ID
-VITE_APP_ID
+    - VITE_API_KEY
+    - VITE_AUTH_DOMAIN
+    - VITE_PROJECT_ID
+    - VITE_STORAGE_BUCKET
+    - VITE_MESSAGING_SENDER_ID
+    - VITE_APP_ID
 - npm run dev
 
 # Running Backend
 - Create a .env file with the following variables: 
-WEATHER_API_KEY
-BASE_URL
+    - WEATHER_API_KEY
+    - BASE_URL
 - On Windows: venv\Scripts\activate  Otherwise: venv/bin/activate
 - Ensure all dependencies are installed: pip install Flask requests python-dotenv prometheus_client flask_cors
 - flask run

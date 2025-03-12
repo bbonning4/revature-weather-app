@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 // List of cities for selection
 const citiesList = ["New York", "London", "Mumbai", "Tokyo", "Sydney", "Dubai"];
@@ -19,6 +21,9 @@ interface WeatherData {
 const Weather: React.FC = () => {
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const auth = getAuth();
 
   // Handle the change of selected cities
   const handleCityChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -51,6 +56,24 @@ const Weather: React.FC = () => {
       console.error("Error fetching weather data:", error);
     }
   };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        // No user is logged in, redirect to /login
+        navigate('/login');
+      } else {
+        setLoading(false);
+      }
+    });
+
+    // Cleanup the listener on component unmount
+    return () => unsubscribe();
+  }, [auth, navigate]);
+
+  if (loading) {
+    return <div>Loading...</div>; // You can show a loading state until authentication is confirmed
+  }
 
   return (
     <div className="container mx-auto p-4">

@@ -26,15 +26,15 @@ const Weather: React.FC = () => {
   const auth = getAuth();
 
   // Handle the change of selected cities
-  const handleCityChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedOptions = Array.from(
-      event.target.selectedOptions,
-      (option) => option.value
-    );
-    if (selectedOptions.length <= 3) {
-      setSelectedCities(selectedOptions);
-    }
-  };
+  // const handleCityChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  //   const selectedOptions = Array.from(
+  //     event.target.selectedOptions,
+  //     (option) => option.value
+  //   );
+  //   if (selectedOptions.length <= 3) {
+  //     setSelectedCities(selectedOptions);
+  //   }
+  // };
 
   // Fetch weather data from the backend
   const fetchWeather = async () => {

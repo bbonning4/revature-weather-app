@@ -8,4 +8,4 @@ groups:
           severity: critical
         annotations:
           summary: "Temperature in {{ $labels.city }} is above 20°C"
-          description: "The temperature in {{ $labels.city }} has been above 20°C for more than 5 minutes."
+          description: "The temperature in {{ $labels.city }} is above 20°C, be cautious of high temperatures."

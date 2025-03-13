@@ -26,3 +26,16 @@
   --color-status-success: #00b087;
   --color-status-error: #ffc5c5;
 }
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-slideDown {
+  animation: slideDown 0.5s ease-in-out forwards;
+}

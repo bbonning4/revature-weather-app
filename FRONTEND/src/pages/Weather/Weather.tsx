@@ -26,19 +26,9 @@ const Weather: React.FC = () => {
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
   const [weatherAlert, setWeatherAlert] = useState<string | null>(null);
+  const [alertVisible, setAlertVisible] = useState(false);
   const navigate = useNavigate();
   const auth = getAuth();
-
-  // Handle the change of selected cities
-  // const handleCityChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-  //   const selectedOptions = Array.from(
-  //     event.target.selectedOptions,
-  //     (option) => option.value
-  //   );
-  //   if (selectedOptions.length <= 3) {
-  //     setSelectedCities(selectedOptions);
-  //   }
-  // };
 
   // Fetch weather data from the backend
   const fetchWeather = async () => {
@@ -69,6 +59,7 @@ const Weather: React.FC = () => {
         setWeatherAlert(
           alertData.alerts[0]?.annotations?.description || "No description"
         );
+        setAlertVisible(true);
       }
     );
 
@@ -143,42 +134,43 @@ const Weather: React.FC = () => {
       </button>
 
       {/* Weather Data Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 place-items-center">
         {weatherData &&
           Object.entries(weatherData.weather_data).map(([city, data]) => (
-            <div key={city}>
-              <h3>{city}</h3>
-              <p>Temperature: {data.temperature}°C</p>
-              <p>Humidity: {data.humidity}%</p>
-              <p>Wind Speed: {data.wind_speed} m/s</p>
-              <p>Pressure: {data.pressure} hPa</p>
+            <div
+              key={city}
+              className="bg-white shadow-lg rounded-2xl p-6 border border-gray-200 w-full max-w-xs md:max-w-sm"
+            >
+              <h3 className="text-xl font-bold text-primary-600 mb-4">
+                {city}
+              </h3>
+              <p className="text-gray-600">
+                🌡️ Temperature: {data.temperature}°C
+              </p>
+              <p className="text-gray-600">💧 Humidity: {data.humidity}%</p>
+              <p className="text-gray-600">
+                🌬️ Wind Speed: {data.wind_speed} m/s
+              </p>
+              <p className="text-gray-600">📊 Pressure: {data.pressure} hPa</p>
             </div>
           ))}
       </div>
 
       {/* Alert Popup */}
-      {weatherAlert && (
-        <div className="fixed top-0 left-0 w-full h-full bg-gray-500 bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-1/2">
+      {weatherAlert && alertVisible && (
+        <div className="fixed top-0 left-0 w-full flex items-center justify-center z-30">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-1/2 animate-slideDown">
             <h2 className="text-xl font-bold">New Alert</h2>
             <p>{weatherAlert}</p>
             <button
               onClick={() => setWeatherAlert(null)}
-              className="mt-4 bg-primary-500 text-white py-2 px-4 rounded-md"
+              className="mt-4 bg-primary-500 text-white py-2 px-4 rounded-md cursor-pointer"
             >
               Close
             </button>
           </div>
         </div>
       )}
-
-      {/* {weatherData && (
-        <iframe
-          src="http://localhost:3000/d-solo/eefbkwbdi96o0b/revature2?orgId=1&from=1741810188538&to=1741810488538&timezone=browser&refresh=5s&panelId=1&__feature.dashboardSceneSolo"
-          width="450"
-          height="200"
-        ></iframe>
-      )} */}
     </div>
   );
 };

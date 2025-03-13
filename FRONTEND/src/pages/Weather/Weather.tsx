@@ -49,6 +49,16 @@ const Weather: React.FC = () => {
     } catch (error) {
       console.error("Error fetching weather data:", error);
     }
+
+    // forecast
+    try {
+      const response = await axios.post("http://localhost:5000/forecast", {
+        cities: selectedCities,
+      });
+      console.log("Response from backend/forecast:", response); // Debugging Log
+    } catch (error) {
+      console.error("Error fetching forecast data:", error);
+    }
   };
 
   // Listen for new alerts from the backend

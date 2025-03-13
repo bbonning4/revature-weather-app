@@ -65,11 +65,21 @@ const Weather: React.FC = () => {
   useEffect(() => {
     socket.on(
       "new_alert",
-      (alertData: { alerts: [{ annotations: { description: string } }] }) => {
-        setWeatherAlert(
-          alertData.alerts[0]?.annotations?.description || "No description"
-        );
-        setAlertVisible(true);
+      (alertData: {
+        alerts: { annotations: { description: string }; endsAt?: string }[];
+      }) => {
+        const activeAlert = alertData.alerts.find((alert) => !alert.endsAt);
+        const resolvedAlert = alertData.alerts.find((alert) => alert.endsAt); // Find a resolved alert
+
+        if (activeAlert) {
+          setWeatherAlert(
+            activeAlert.annotations.description || "No description"
+          );
+        } else if (resolvedAlert) {
+          setWeatherAlert(`Resolved: ${resolvedAlert.annotations.description}`);
+        }
+
+        setAlertVisible(true); // Keep alert visible even on resolution
       }
     );
 

@@ -27,6 +27,8 @@ const Weather: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [weatherAlert, setWeatherAlert] = useState<string | null>(null);
   const [alertVisible, setAlertVisible] = useState(false);
+  // const [weatherAlert, setWeatherAlert] = useState<string | null>("Test alert");
+  // const [alertVisible, setAlertVisible] = useState(true);
   const navigate = useNavigate();
   const auth = getAuth();
 

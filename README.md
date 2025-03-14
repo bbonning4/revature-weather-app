@@ -18,6 +18,7 @@
 - Create a .env file with the following variables: 
     - WEATHER_API_KEY
     - BASE_URL
+    - FORECAST_URL
 - Create the virtual environment: python3 -m venv venv
 - On Windows: venv\Scripts\activate  Otherwise: venv/bin/activate
 - Ensure all dependencies are installed: pip install Flask requests python-dotenv prometheus_client flask_cors flask-socketio eventlet

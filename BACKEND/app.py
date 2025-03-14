@@ -19,10 +19,17 @@ weather_humidity = Gauge("weather_humidity", "Humidity percentage", ["city"], re
 weather_wind_speed = Gauge("weather_wind_speed", "Wind speed in m/s", ["city"], registry=registry)
 weather_pressure = Gauge("weather_pressure", "Atmospheric pressure in hPa", ["city"], registry=registry)
 
+# Define Prometheus Gauges for forecast data (indexed by timestamp)
+forecast_temperature = Gauge("forecast_temperature", "Forecasted temperature (°C)", ["city", "timestamp"], registry=registry)
+forecast_humidity = Gauge("forecast_humidity", "Forecasted humidity (%)", ["city", "timestamp"], registry=registry)
+forecast_wind_speed = Gauge("forecast_wind_speed", "Forecasted wind speed (m/s)", ["city", "timestamp"], registry=registry)
+forecast_pressure = Gauge("forecast_pressure", "Forecasted pressure (hPa)", ["city", "timestamp"], registry=registry)
+
 # OpenWeather API Config
 load_dotenv()
 WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
 BASE_URL = os.getenv("BASE_URL")
+FORECAST_URL = os.getenv("FORECAST_URL")
 
 # Store latest weather metrics
 latest_weather_data = {}
@@ -72,6 +79,53 @@ def get_weather():
 
     # return jsonify({"message": "Weather data updated successfully"}), 200
     return jsonify({"weather_data": latest_weather_data}), 200
+
+@app.route('/forecast', methods=['POST'])
+def get_forecast():
+    """Fetch weather forecast data for the next 5 days."""
+    data = request.json
+    cities = data.get("cities", [])
+
+    if not cities:
+        return jsonify({"error": "No cities provided"}), 400
+
+    forecast_data = {}
+
+    for city in cities:
+        response = requests.get(f"{FORECAST_URL}?q={city}&appid={WEATHER_API_KEY}&units=metric")
+
+        if response.status_code == 200:
+            forecast = response.json()
+            city_forecast = []
+
+            for item in forecast["list"]:
+                timestamp = item["dt"]  # Forecast timestamp
+                temp = item["main"]["temp"]
+                humidity = item["main"]["humidity"]
+                wind_speed = item["wind"]["speed"]
+                pressure = item["main"]["pressure"]
+
+                city_forecast.append({
+                    "timestamp": timestamp,
+                    "temperature": temp,
+                    "humidity": humidity,
+                    "wind_speed": wind_speed,
+                    "pressure": pressure
+                })
+
+                # Update Prometheus forecast metrics
+                forecast_temperature.labels(city=city, timestamp=timestamp).set(temp)
+                forecast_humidity.labels(city=city, timestamp=timestamp).set(humidity)
+                forecast_wind_speed.labels(city=city, timestamp=timestamp).set(wind_speed)
+                forecast_pressure.labels(city=city, timestamp=timestamp).set(pressure)
+
+            forecast_data[city] = city_forecast
+            print(f"✅ Updated forecast for {city}")
+
+        else:
+            print(f"❌ Failed to fetch forecast for {city}: {response.status_code}")
+
+    return jsonify({"forecast_data": forecast_data}), 200
 
 @app.route('/metrics')
 def metrics():

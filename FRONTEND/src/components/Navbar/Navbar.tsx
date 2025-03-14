@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
 import DropdownMenu from "./DropdownMenu";
-import UserIcon from "../../assets/default_user.jpg"
+import UserIcon from "../../assets/default_user.jpg";
 import { getCurrentUser, logOut } from "../../auth/auth";
 
 const Navbar: React.FC = () => {
@@ -77,6 +77,10 @@ const Navbar: React.FC = () => {
                       src={user.photoURL || UserIcon}
                       alt="Profile"
                       className="w-10 h-10 rounded-full"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = UserIcon; // Fallback if the image fails to load
+                      }}
                     />
                     <span className="font-bold">{user.email}</span>
                   </div>

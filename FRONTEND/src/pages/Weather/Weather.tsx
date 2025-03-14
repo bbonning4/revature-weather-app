@@ -27,6 +27,8 @@ const Weather: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [weatherAlert, setWeatherAlert] = useState<string | null>(null);
   const [alertVisible, setAlertVisible] = useState(false);
+  // const [weatherAlert, setWeatherAlert] = useState<string | null>("Test alert");
+  // const [alertVisible, setAlertVisible] = useState(true);
   const navigate = useNavigate();
   const auth = getAuth();
 
@@ -49,17 +51,37 @@ const Weather: React.FC = () => {
     } catch (error) {
       console.error("Error fetching weather data:", error);
     }
+
+    // forecast
+    try {
+      const response = await axios.post("http://localhost:5000/forecast", {
+        cities: selectedCities,
+      });
+      console.log("Response from backend/forecast:", response); // Debugging Log
+    } catch (error) {
+      console.error("Error fetching forecast data:", error);
+    }
   };
 
   // Listen for new alerts from the backend
   useEffect(() => {
     socket.on(
       "new_alert",
-      (alertData: { alerts: [{ annotations: { description: string } }] }) => {
-        setWeatherAlert(
-          alertData.alerts[0]?.annotations?.description || "No description"
-        );
-        setAlertVisible(true);
+      (alertData: {
+        alerts: { annotations: { description: string }; endsAt?: string }[];
+      }) => {
+        const activeAlert = alertData.alerts.find((alert) => !alert.endsAt);
+        const resolvedAlert = alertData.alerts.find((alert) => alert.endsAt); // Find a resolved alert
+
+        if (activeAlert) {
+          setWeatherAlert(
+            activeAlert.annotations.description || "No description"
+          );
+        } else if (resolvedAlert) {
+          setWeatherAlert(`Resolved: ${resolvedAlert.annotations.description}`);
+        }
+
+        setAlertVisible(true); // Keep alert visible even on resolution
       }
     );
 
